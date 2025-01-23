@@ -154,6 +154,17 @@ namespace Coffee {
             Renderer::Submit(lightComponent);
         }
 
+        auto uiView = m_Registry.view<UIComponent, TransformComponent>();
+
+        for (auto& entity : uiView)
+        {
+            auto& uiComponent = uiView.get<UIComponent>(entity);
+            auto& transformComponent = uiView.get<TransformComponent>(entity);
+
+            // Renderiza el componente UI con su transformación y propiedades.
+            Renderer::SubmitUI(uiComponent, transformComponent.GetWorldTransform());
+        }
+
         Renderer::EndScene();
     }
 
@@ -284,7 +295,9 @@ namespace Coffee {
             .get<CameraComponent>(archive)
             .get<MeshComponent>(archive)
             .get<MaterialComponent>(archive)
-            .get<LightComponent>(archive);
+            .get<LightComponent>(archive)
+            .get<UIComponent>(archive);
+            
         
         scene->m_FilePath = path;
 
@@ -318,7 +331,8 @@ namespace Coffee {
             .get<CameraComponent>(archive)
             .get<MeshComponent>(archive)
             .get<MaterialComponent>(archive)
-            .get<LightComponent>(archive);
+            .get<LightComponent>(archive)
+            .get<UIComponent>(archive);
         
         scene->m_FilePath = path;
 

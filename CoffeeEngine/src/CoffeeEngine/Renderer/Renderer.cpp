@@ -281,6 +281,44 @@ namespace Coffee {
         s_Stats.DrawCalls++;
     }
 
+    void Renderer::SubmitUI(const UIComponent& uiComponent, const glm::mat4& worldTransform)
+    {
+        // Validate input components
+        if (!uiComponent.IsVisible)
+            return;
+
+        // Apply world transformation
+        glm::vec2 position = glm::vec2(worldTransform[3]);
+        float scale = glm::length(glm::vec2(worldTransform[0])); // Extract scale from transform
+
+        // TODO: Implement specific UI rendering logic
+        // This is a placeholder - you'll need to add actual UI rendering implementation
+        switch (uiComponent.ComponentType)
+        {
+        case UIComponent::UIComponentType::Button:
+            // Render button
+            break;
+        case UIComponent::UIComponentType::Text:
+            // Render text
+            break;
+        case UIComponent::UIComponentType::Panel:
+            // Render panel
+            break;
+        default:
+            break;
+        }
+
+        // Optional: Render child UI elements recursively
+        if (uiComponent.HasChildren)
+        {
+            for (const auto& childComponent : uiComponent.Children)
+            {
+                // Recursively submit child UI components with updated world transform
+                SubmitUI(childComponent, worldTransform);
+            }
+        }
+    }
+
     void Renderer::OnResize(uint32_t width, uint32_t height)
     {
         s_viewportWidth = width;

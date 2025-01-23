@@ -284,6 +284,53 @@ namespace Coffee {
             archive(cereal::make_nvp("Color", Color), cereal::make_nvp("Direction", Direction), cereal::make_nvp("Position", Position), cereal::make_nvp("Range", Range), cereal::make_nvp("Attenuation", Attenuation), cereal::make_nvp("Intensity", Intensity), cereal::make_nvp("Angle", Angle), cereal::make_nvp("Type", type));
         }
     };
+
+    /**
+     * @brief Component representing a UI element.
+     * @ingroup scene
+     */
+    struct UIComponent
+    {
+        glm::vec2 Position = {0.0f, 0.0f};          ///< The 2D position of the UI element.
+        glm::vec2 Size = {100.0f, 50.0f};           ///< The size of the UI element.
+        glm::vec4 Color = {1.0f, 1.0f, 1.0f, 1.0f}; ///< The color of the UI element (RGBA).
+        std::string TexturePath = "";               ///< Path to the texture file, if any.
+
+        // New additions
+        enum UIComponentType
+        {
+            None = 0,
+            Button,
+            Panel,
+            Text,
+            Image
+        } ComponentType = None;
+
+        bool IsInteractive = false;
+        bool IsVisible = true;
+        bool HasChildren = false;
+        float Rotation = 0.0f;
+        float Alpha = 1.0f;
+
+        std::vector<UIComponent> Children;
+
+        UIComponent() = default;
+        UIComponent(const UIComponent&) = default;
+        UIComponent(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color,
+                    const std::string& texturePath = "")
+            : Position(position), Size(size), Color(color), TexturePath(texturePath)
+        {
+        }
+
+        template <class Archive> void serialize(Archive& archive)
+        {
+            archive(cereal::make_nvp("Position", Position), cereal::make_nvp("Size", Size),
+                    cereal::make_nvp("Color", Color), cereal::make_nvp("TexturePath", TexturePath),
+                    cereal::make_nvp("ComponentType", ComponentType), cereal::make_nvp("IsInteractive", IsInteractive),
+                    cereal::make_nvp("IsVisible", IsVisible), cereal::make_nvp("Rotation", Rotation),
+                    cereal::make_nvp("Alpha", Alpha), cereal::make_nvp("Children", Children));
+        }
+    };
 }
 
 /** @} */
