@@ -612,41 +612,8 @@ namespace Coffee {
                     ImGui::Text("Camera: %s", canvas.Camera ? "Assigned" : "None");
                     if (ImGui::Button("Assign Camera"))
                     {
-                        // Lógica para seleccionar una cámara
-                        // Aquí asumo que tienes una lista de cámaras disponibles en tu sistema, por ejemplo, un vector
-                        std::vector<Ref<SceneCamera>> availableCameras =
-                            GetAvailableCameras(); // Función que retorna una lista de cámaras disponibles
-
-                        if (!availableCameras.empty()) // Verifica si hay cámaras disponibles
-                        {
-                            // Crear un combo para elegir la cámara
-                            std::vector<const char*> cameraNames;
-                            for (const auto& camera : availableCameras)
-                            {
-                                // Suponiendo que tienes un método que retorna el nombre de la cámara
-                                cameraNames.push_back(camera->GetName().c_str());
-                            }
-
-                            // Variable para almacenar el índice seleccionado
-                            int selectedCameraIndex = -1;
-
-                            // Mostrar el combo de cámaras
-                            if (ImGui::Combo("Select Camera", &selectedCameraIndex, cameraNames.data(),
-                                             cameraNames.size()))
-                            {
-                                if (selectedCameraIndex >= 0)
-                                {
-                                    // Asignar la cámara seleccionada al canvas
-                                    canvas.Camera = availableCameras[selectedCameraIndex];
-                                }
-                            }
-                        }
-                        else
-                        {
-                            ImGui::Text("No cameras available.");
-                        }
+                        // Logic to assign a camera (e.g., open a camera selection dialog)
                     }
-
                 }
 
                 // Visibility Toggle
