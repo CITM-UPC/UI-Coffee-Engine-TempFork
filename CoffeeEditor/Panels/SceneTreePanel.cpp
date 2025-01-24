@@ -580,8 +580,99 @@ namespace Coffee {
                 }
             }
         }
-    
+        if (entity.HasComponent<CanvasComponent>())
+        {
+            auto& canvas = entity.GetComponent<CanvasComponent>();
 
+            if (ImGui::CollapsingHeader("Canvas Properties", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                // Render Mode Dropdown
+                const char* renderModes[] = {"Screen Space - Overlay", "Screen Space - Camera", "World Space"};
+                int selectedMode = static_cast<int>(canvas.Mode);
+                if (ImGui::Combo("Render Mode", &selectedMode, renderModes, IM_ARRAYSIZE(renderModes)))
+                {
+                    canvas.Mode = static_cast<CanvasComponent::RenderMode>(selectedMode);
+                }
+
+                // Scale Factor
+                ImGui::DragFloat2("Scale Factor", glm::value_ptr(canvas.ScaleFactor), 0.01f, 0.1f, 10.0f);
+
+                // Background Color
+                ImGui::ColorEdit4("Background Color", glm::value_ptr(canvas.BackgroundColor));
+
+                // Canvas Size (only relevant for World Space)
+                if (canvas.Mode == CanvasComponent::WorldSpace)
+                {
+                    ImGui::DragFloat2("Canvas Size", glm::value_ptr(canvas.Size));
+                }
+
+                // Camera Reference (only relevant for Screen Space - Camera)
+                if (canvas.Mode == CanvasComponent::ScreenSpaceCamera)
+                {
+                    ImGui::Text("Camera: %s", canvas.Camera ? "Assigned" : "None");
+                    if (ImGui::Button("Assign Camera"))
+                    {
+                        // Lógica para seleccionar una cámara
+                        // Aquí asumo que tienes una lista de cámaras disponibles en tu sistema, por ejemplo, un vector
+                        std::vector<Ref<SceneCamera>> availableCameras =
+                            GetAvailableCameras(); // Función que retorna una lista de cámaras disponibles
+
+                        if (!availableCameras.empty()) // Verifica si hay cámaras disponibles
+                        {
+                            // Crear un combo para elegir la cámara
+                            std::vector<const char*> cameraNames;
+                            for (const auto& camera : availableCameras)
+                            {
+                                // Suponiendo que tienes un método que retorna el nombre de la cámara
+                                cameraNames.push_back(camera->GetName().c_str());
+                            }
+
+                            // Variable para almacenar el índice seleccionado
+                            int selectedCameraIndex = -1;
+
+                            // Mostrar el combo de cámaras
+                            if (ImGui::Combo("Select Camera", &selectedCameraIndex, cameraNames.data(),
+                                             cameraNames.size()))
+                            {
+                                if (selectedCameraIndex >= 0)
+                                {
+                                    // Asignar la cámara seleccionada al canvas
+                                    canvas.Camera = availableCameras[selectedCameraIndex];
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ImGui::Text("No cameras available.");
+                        }
+                    }
+
+                }
+
+                // Visibility Toggle
+                ImGui::Checkbox("Is Visible", &canvas.IsVisible);
+
+                // Render Nested UI Components (Children)
+                if (ImGui::TreeNode("Nested UI Elements"))
+                {
+                    for (size_t i = 0; i < canvas.Children.size(); ++i)
+                    {
+                        ImGui::PushID(static_cast<int>(i));
+                        if (ImGui::CollapsingHeader(("Child " + std::to_string(i)).c_str(),
+                                                    ImGuiTreeNodeFlags_DefaultOpen))
+                        {
+                            auto& child = canvas.Children[i];
+                            ImGui::DragFloat2("Position", glm::value_ptr(child.Position));
+                            ImGui::DragFloat2("Size", glm::value_ptr(child.Size));
+                            ImGui::ColorEdit4("Color", glm::value_ptr(child.Color));
+                            ImGui::Text("Text: %s", child.Text.c_str());
+                        }
+                        ImGui::PopID();
+                    }
+                    ImGui::TreePop();
+                }
+            }
+        }
 
         if (entity.HasComponent<ScriptComponent>())
         {
@@ -672,7 +763,8 @@ namespace Coffee {
             static char buffer[256] = "";
             ImGui::InputTextWithHint("##Search Component", "Search Component:",buffer, 256);
 
-            std::string items[] = { "Tag Component", "Transform Component", "Mesh Component", "Material Component", "Light Component", "Camera Component", "Lua Script Component" };
+            std::string items[] = {
+                "Tag Component", "Transform Component", "Mesh Component", "Material Component", "Light Component", "Camera Component", "Lua Script Component", "Canvas Component" };
             static int item_current = 1;
 
             if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - 200)))
@@ -743,6 +835,12 @@ namespace Coffee {
                         // TODO add script component
                     ImGui::CloseCurrentPopup();
                 }
+				else if (items[item_current] == "Canvas Component")
+				{
+					if (!entity.HasComponent<CanvasComponent>())
+						entity.AddComponent<CanvasComponent>();
+					ImGui::CloseCurrentPopup();
+				}                
                 else
                 {
                     ImGui::CloseCurrentPopup();
@@ -826,7 +924,7 @@ namespace Coffee {
                     e.AddComponent<UIComponent>();
 					SetSelectedEntity(e);
 					ImGui::CloseCurrentPopup();
-				}
+				}              
                 else
                 {
                     ImGui::CloseCurrentPopup();
