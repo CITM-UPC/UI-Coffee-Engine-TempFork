@@ -561,6 +561,28 @@ namespace Coffee {
             }
         }
 
+        if (entity.HasComponent<UIComponent>())
+        {
+            auto& ui = entity.GetComponent<UIComponent>();
+
+            if (ImGui::CollapsingHeader("UI Properties", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                ImGui::DragFloat2("Position", glm::value_ptr(ui.Position)); // Cambiar a 'Position'
+                ImGui::DragFloat2("Size", glm::value_ptr(ui.Size));         // Cambiar a 'Size'
+                ImGui::ColorEdit4("Color", glm::value_ptr(ui.Color));       // Cambiar a 'Color'
+
+                char buffer[256];
+                memset(buffer, 0, sizeof(buffer));
+                strcpy(buffer, ui.Text.c_str()); // Cambiar a 'Text'
+                if (ImGui::InputText("Text", buffer, sizeof(buffer)))
+                {
+                    ui.Text = std::string(buffer);
+                }
+            }
+        }
+    
+
+
         if (entity.HasComponent<ScriptComponent>())
         {
             auto& scriptComponent = entity.GetComponent<ScriptComponent>();

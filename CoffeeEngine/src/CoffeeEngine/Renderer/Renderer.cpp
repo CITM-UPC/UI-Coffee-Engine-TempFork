@@ -298,7 +298,7 @@ namespace Coffee {
         case UIComponent::UIComponentType::Button:
             // Render button
             break;
-        case UIComponent::UIComponentType::Text:
+        case UIComponent::UIComponentType::TextUI:
             // Render text
             break;
         case UIComponent::UIComponentType::Panel:
@@ -308,15 +308,15 @@ namespace Coffee {
             break;
         }
 
-        // Optional: Render child UI elements recursively
-        if (uiComponent.HasChildren)
-        {
-            for (const auto& childComponent : uiComponent.Children)
-            {
-                // Recursively submit child UI components with updated world transform
-                SubmitUI(childComponent, worldTransform);
-            }
-        }
+        //// Optional: Render child UI elements recursively
+        //if (uiComponent.HasChildren)
+        //{
+        //    for (const auto& childComponent : uiComponent.Children)
+        //    {
+        //        // Recursively submit child UI components with updated world transform
+        //        SubmitUI(childComponent, worldTransform);
+        //    }
+        //}
     }
 
     void Renderer::OnResize(uint32_t width, uint32_t height)

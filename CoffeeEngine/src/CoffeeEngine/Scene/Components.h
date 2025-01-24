@@ -289,30 +289,36 @@ namespace Coffee {
      * @brief Component representing a UI element.
      * @ingroup scene
      */
+    /**
+     * @brief Component representing a UI element.
+     * @ingroup scene
+     */
     struct UIComponent
     {
-        glm::vec2 Position = {0.0f, 0.0f};          ///< The 2D position of the UI element.
-        glm::vec2 Size = {100.0f, 50.0f};           ///< The size of the UI element.
-        glm::vec4 Color = {1.0f, 1.0f, 1.0f, 1.0f}; ///< The color of the UI element (RGBA).
-        std::string TexturePath = "";               ///< Path to the texture file, if any.
+        glm::vec2 Position = {0.0f, 0.0f};          ///< Position of the UI element.
+        glm::vec2 Size = {100.0f, 50.0f};           ///< Size of the UI element.
+        glm::vec4 Color = {1.0f, 1.0f, 1.0f, 1.0f}; ///< Color of the UI element (RGBA).
+        std::string Text = "UI Element";            ///< Text content of the UI element.
+        std::string TexturePath = "";               ///< Path to the texture (if any).
 
-        // New additions
+        // New properties
+        bool IsInteractive = false; ///< Whether the UI element can be interacted with.
+        bool IsVisible = true;      ///< Whether the UI element is visible.
+        float Rotation = 0.0f;      ///< Rotation of the UI element in degrees.
+        float Alpha = 1.0f;         ///< Transparency (1.0 = opaque, 0.0 = fully transparent).
+
+        // Nested UI components
+        std::vector<UIComponent> Children; ///< Children UI components (for nesting).
+
+        // Type of UI component (e.g., Button, Panel, etc.)
         enum UIComponentType
         {
             None = 0,
             Button,
             Panel,
-            Text,
+            TextUI,
             Image
         } ComponentType = None;
-
-        bool IsInteractive = false;
-        bool IsVisible = true;
-        bool HasChildren = false;
-        float Rotation = 0.0f;
-        float Alpha = 1.0f;
-
-        std::vector<UIComponent> Children;
 
         UIComponent() = default;
         UIComponent(const UIComponent&) = default;
@@ -322,15 +328,62 @@ namespace Coffee {
         {
         }
 
+        // Adds a child UI component
+        void AddChild(const UIComponent& child) { Children.push_back(child); }
+
+        // Removes a child UI component (by index)
+        void RemoveChild(size_t index)
+        {
+            if (index < Children.size())
+                Children.erase(Children.begin() + index);
+        }
+
+        // Render the UI element
+        void Draw()
+        {
+            if (!IsVisible)
+                return;
+
+            // Pseudo-code for drawing:
+            // - Apply transformations (position, size, rotation)
+            // - Set the color and alpha
+            // - Draw the texture if available, otherwise draw a rectangle
+            // - Render text if applicable
+
+            // Example:
+            // Renderer::DrawQuad(Position, Size, Color, TexturePath);
+
+            // Draw children recursively
+            for (auto& child : Children)
+            {
+                child.Draw();
+            }
+        }
+
+        // Handle interaction (e.g., clicks)
+        void HandleInteraction()
+        {
+            if (!IsInteractive || !IsVisible)
+                return;
+
+            // Pseudo-code for interaction:
+            // - Check if mouse is over the element
+            // - Trigger specific behavior based on `ComponentType`
+            // - Example: if (ComponentType == Button) { OnClick(); }
+        }
+
+        // Serialization
         template <class Archive> void serialize(Archive& archive)
         {
             archive(cereal::make_nvp("Position", Position), cereal::make_nvp("Size", Size),
-                    cereal::make_nvp("Color", Color), cereal::make_nvp("TexturePath", TexturePath),
-                    cereal::make_nvp("ComponentType", ComponentType), cereal::make_nvp("IsInteractive", IsInteractive),
-                    cereal::make_nvp("IsVisible", IsVisible), cereal::make_nvp("Rotation", Rotation),
-                    cereal::make_nvp("Alpha", Alpha), cereal::make_nvp("Children", Children));
+                    cereal::make_nvp("Color", Color), cereal::make_nvp("Text", TextUI),
+                    cereal::make_nvp("TexturePath", TexturePath), cereal::make_nvp("ComponentType", ComponentType),
+                    cereal::make_nvp("IsInteractive", IsInteractive), cereal::make_nvp("IsVisible", IsVisible),
+                    cereal::make_nvp("Rotation", Rotation), cereal::make_nvp("Alpha", Alpha),
+                    cereal::make_nvp("Children", Children));
         }
     };
+
 }
 
 /** @} */
