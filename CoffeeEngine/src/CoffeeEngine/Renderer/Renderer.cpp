@@ -9,6 +9,7 @@
 #include "CoffeeEngine/Renderer/Shader.h"
 #include "CoffeeEngine/Renderer/Texture.h"
 #include "CoffeeEngine/Renderer/UniformBuffer.h"
+#include "CoffeeEngine/Renderer/TextRenderer.h"
 
 #include "CoffeeEngine/Embedded/ToneMappingShader.inl"
 #include "CoffeeEngine/Embedded/FinalPassShader.inl"
@@ -300,6 +301,12 @@ namespace Coffee {
             break;
         case UIComponent::UIComponentType::TextUI:
             // Render text
+            if (uiComponent.Text.empty())
+                return;
+            // Assuming a TextRenderer class exists for rendering text
+            
+            // Render text
+            //TextRenderer::RenderText(uiComponent.Text, position, scale);
             break;
         case UIComponent::UIComponentType::Panel:
             // Render panel

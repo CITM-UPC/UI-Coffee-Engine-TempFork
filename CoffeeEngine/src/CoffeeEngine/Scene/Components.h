@@ -21,6 +21,7 @@
 #include "src/CoffeeEngine/IO/Serialization/GLMSerialization.h"
 #include "CoffeeEngine/IO/ResourceLoader.h"
 
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
