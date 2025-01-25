@@ -38,7 +38,7 @@ find_package(nfd REQUIRED)
 find_package(sol2 CONFIG REQUIRED)
 find_package(Lua REQUIRED)
 
-add_library(${PROJECT_NAME} ${SOURCES} "src/UI/UI Renderer.cpp" "src/UI/UI Renderer.h")
+add_library(${PROJECT_NAME} ${SOURCES})
 add_library(coffee-engine ALIAS ${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME}
