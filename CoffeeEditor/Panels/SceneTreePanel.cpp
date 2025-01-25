@@ -574,10 +574,10 @@ namespace Coffee {
                 char buffer[256];
                 memset(buffer, 0, sizeof(buffer));
                 strcpy(buffer, ui.Text.c_str()); // Cambiar a 'Text'
-                if (ImGui::InputText("Text", buffer, sizeof(buffer)))
+               /* if (ImGui::InputText("Text", buffer, sizeof(buffer)))
                 {
                     ui.Text = std::string(buffer);
-                }
+                }*/
             }
         }
         if (entity.HasComponent<CanvasComponent>())
@@ -673,7 +673,7 @@ namespace Coffee {
                 int selectedAlignment = static_cast<int>(text.Alignment);
                 if (ImGui::Combo("Alignment", &selectedAlignment, alignments, IM_ARRAYSIZE(alignments)))
                 {
-                    text.Alignment = static_cast<TextComponent::Alignment>(selectedAlignment);
+                    //text.Alignment = static_cast<TextComponent::Alignment>(selectedAlignment);
                 }
 
                 // Text Wrapping
