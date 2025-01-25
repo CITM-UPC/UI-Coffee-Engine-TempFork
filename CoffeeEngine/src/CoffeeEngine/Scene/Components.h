@@ -489,12 +489,13 @@ namespace Coffee
         glm::vec4 Color = {1.0f, 1.0f, 1.0f, 1.0f}; ///< Font color (RGBA).
         std::string FontPath = "assets/fonts/OpenSans-SemiBold.ttf";       ///< Path to the font file.
 
-        enum class Alignment
+       enum class Alignment
         {
             Left = 0,
             Center,
             Right
-        } Alignment = Alignment::Left; ///< Text alignment.
+       };
+       Alignment TextAlignment = Alignment::Left; ///< Text alignment
 
         bool WrapText = false;  ///< Enable or disable text wrapping.
         float WrapWidth = 0.0f; ///< Width for text wrapping (only relevant if WrapText is true).

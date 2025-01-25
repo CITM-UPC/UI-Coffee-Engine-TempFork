@@ -670,10 +670,12 @@ namespace Coffee {
 
                 // Text Alignment
                 const char* alignments[] = {"Left", "Center", "Right"};
-                int selectedAlignment = static_cast<int>(text.Alignment);
+                int selectedAlignment = static_cast<int>(text.TextAlignment);
                 if (ImGui::Combo("Alignment", &selectedAlignment, alignments, IM_ARRAYSIZE(alignments)))
                 {
-                    //text.Alignment = static_cast<TextComponent::Alignment>(selectedAlignment);
+
+                    text.TextAlignment = static_cast<TextComponent::Alignment>(selectedAlignment);
+
                 }
 
                 // Text Wrapping
