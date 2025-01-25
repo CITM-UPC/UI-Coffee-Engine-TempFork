@@ -29,6 +29,9 @@ namespace Coffee {
          */
         static void SetClearColor(const glm::vec4& color);
 
+        
+        static void DrawQuad(const Ref<VertexArray>& vertexArray, int vertexCount);
+
         /**
          * @brief Clears the current buffer.
          */

@@ -51,6 +51,12 @@ namespace Coffee {
 		glDepthFunc(GL_LEQUAL);
     }
 
+	void RendererAPI::DrawQuad(const Ref<VertexArray>& vertexArray, int vertexCount)
+    {
+        vertexArray->Bind();                        // Vinculamos el VAO
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount); // Dibujamos triángulos
+    }
+
 	void RendererAPI::SetClearColor(const glm::vec4& color)
 	{
 	    ZoneScoped;
