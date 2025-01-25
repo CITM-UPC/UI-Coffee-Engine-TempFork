@@ -308,8 +308,8 @@ namespace Coffee {
             // Render text
             //TextRenderer::RenderText(uiComponent.Text, position, scale);
             break;
-        case UIComponent::UIComponentType::Panel:
-            // Render panel
+        case UIComponent::UIComponentType::Canvas:
+            // Render canvas
             break;
         default:
             break;

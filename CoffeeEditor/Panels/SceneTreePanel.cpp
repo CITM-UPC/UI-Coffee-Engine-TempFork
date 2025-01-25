@@ -640,6 +640,50 @@ namespace Coffee {
                 }
             }
         }
+        if (entity.HasComponent<TextComponent>())
+        {
+            auto& text = entity.GetComponent<TextComponent>();
+
+            if (ImGui::CollapsingHeader("Text Properties", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                // Text Content
+                char buffer[256];
+                memset(buffer, 0, sizeof(buffer));
+                strcpy(buffer, text.Text.c_str());
+                if (ImGui::InputText("Text", buffer, sizeof(buffer)))
+                {
+                    text.Text = std::string(buffer);
+                }
+
+                // Font Size
+                ImGui::DragFloat("Font Size", &text.FontSize, 1.0f, 1.0f, 100.0f);
+
+                // Font Color
+                ImGui::ColorEdit4("Font Color", glm::value_ptr(text.Color));
+
+                // Font Path
+                ImGui::Text("Font Path: %s", text.FontPath.c_str());
+                if (ImGui::Button("Change Font"))
+                {
+                    // Logic to change the font (e.g., open a file dialog)
+                }
+
+                // Text Alignment
+                const char* alignments[] = {"Left", "Center", "Right"};
+                int selectedAlignment = static_cast<int>(text.Alignment);
+                if (ImGui::Combo("Alignment", &selectedAlignment, alignments, IM_ARRAYSIZE(alignments)))
+                {
+                    text.Alignment = static_cast<TextComponent::Alignment>(selectedAlignment);
+                }
+
+                // Text Wrapping
+                ImGui::Checkbox("Wrap Text", &text.WrapText);
+                if (text.WrapText)
+                {
+                    ImGui::DragFloat("Wrap Width", &text.WrapWidth, 1.0f, 0.0f, 1000.0f);
+                }
+            }
+        }
 
         if (entity.HasComponent<ScriptComponent>())
         {
@@ -730,8 +774,9 @@ namespace Coffee {
             static char buffer[256] = "";
             ImGui::InputTextWithHint("##Search Component", "Search Component:",buffer, 256);
 
-            std::string items[] = {
-                "Tag Component", "Transform Component", "Mesh Component", "Material Component", "Light Component", "Camera Component", "Lua Script Component", "Canvas Component" };
+            std::string items[] = {"Tag Component",        "Transform Component", "Mesh Component",
+                                   "Material Component",   "Light Component",     "Camera Component",
+                                   "Lua Script Component", "Canvas Component",    "Text Renderer"};
             static int item_current = 1;
 
             if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - 200)))
@@ -807,7 +852,13 @@ namespace Coffee {
 					if (!entity.HasComponent<CanvasComponent>())
 						entity.AddComponent<CanvasComponent>();
 					ImGui::CloseCurrentPopup();
-				}                
+				}    
+                else if (items[item_current] == "Text Renderer")
+                {
+					if (!entity.HasComponent<TextComponent>())
+						entity.AddComponent<TextComponent>();
+					ImGui::CloseCurrentPopup();
+				}
                 else
                 {
                     ImGui::CloseCurrentPopup();
