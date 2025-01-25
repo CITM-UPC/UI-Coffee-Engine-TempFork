@@ -516,7 +516,7 @@ namespace Coffee
         {
             archive(cereal::make_nvp("Text", TextUI), cereal::make_nvp("FontSize", FontSize),
                     cereal::make_nvp("Color", Color), cereal::make_nvp("FontPath", FontPath),
-                    cereal::make_nvp("Alignment", Alignment), cereal::make_nvp("WrapText", WrapText),
+                    cereal::make_nvp("Alignment", TextAlignment), cereal::make_nvp("WrapText", WrapText),
                     cereal::make_nvp("WrapWidth", WrapWidth), cereal::make_nvp("Position", Position),
                     cereal::make_nvp("Size", Size), cereal::make_nvp("Rotation", Rotation),
                     cereal::make_nvp("Alpha", Alpha), cereal::make_nvp("IsVisible", IsVisible),
