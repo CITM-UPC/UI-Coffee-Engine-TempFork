@@ -69,6 +69,7 @@ namespace Coffee {
         //ImVec2 viewportPanelSize = {500.0f, 500.0f};
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
         glm::vec2 m_ViewportBounds[2];
+        glm::vec2 windowsize = {0.0f, 0.0f};
 
         int m_GizmoType = -1;
 

@@ -151,3 +151,25 @@ namespace Coffee {
     }
 
 }
+
+void Coffee::Window::SetSize(unsigned int width, unsigned int height)
+{
+    ZoneScoped;
+
+    // Validación de entrada
+    if (width == 0 || height == 0)
+    {
+        COFFEE_CORE_WARN("Invalid window size: {0}x{1}. Size must be greater than zero.", width, height);
+        return;
+    }
+
+    // Ajustar el tamaño de la ventana utilizando SDL
+    SDL_SetWindowSize(m_Window, width, height);
+
+    // Actualizar los datos internos de la ventana
+    m_Data.Width = width;
+    m_Data.Height = height;
+
+    // Mensaje de depuración
+    
+}

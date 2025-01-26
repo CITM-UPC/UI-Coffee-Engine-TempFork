@@ -72,6 +72,13 @@ namespace Coffee {
         unsigned int GetHeight() const { return m_Data.Height; }
 
         /**
+         * @brief Sets the size of the window.
+         * @param width The new width of the window.
+         * @param height The new height of the window.
+         */
+        void SetSize(unsigned int width, unsigned int height);
+
+        /**
          * @brief Enables or disables VSync.
          * @param enabled True to enable VSync, false to disable.
          */

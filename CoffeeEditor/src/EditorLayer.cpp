@@ -245,19 +245,22 @@ namespace Coffee {
                 }
                 ImGui::EndMenu();
             }
-            /*if (ImGui::BeginMenu("Confi"))
+            if (ImGui::BeginMenu("Confi"))
             {
                 if (ImGui::CollapsingHeader("Configuracion de Modulos"))
                 {
-                    
-                    ImGui::SliderFloat("Ancho de ventana", &viewportPanelSize.x, 200.0f, 2000.0f);
-
-                    ImGui::SliderFloat("Alto de ventana", &viewportPanelSize.y, 200.0f, 1000.0f);
-                    
+                    windowsize.x = Application::Get().GetWindow().GetWidth();
+                    windowsize.y = Application::Get().GetWindow().GetHeight();
+                    if (ImGui::SliderFloat("Ancho de ventana", &windowsize.x, 200.0f, 2000.0f) ||
+                        ImGui::SliderFloat("Alto de ventana", &windowsize.y, 200.0f, 1000.0f))
+                    {
+                        Application::Get().GetWindow().SetSize(static_cast<unsigned int>(windowsize.x),
+                                                               static_cast<unsigned int>(windowsize.y));
+                    }
                 }
                 ImGui::EndMenu();
-            }*/
-
+            }
+            Application::Get().GetWindow().SetSize(windowsize.x, windowsize.y);
             //Play and Stop buttons
             ImGui::SetCursorPosX(ImGui::GetWindowWidth() * 0.5f - 50);
 
@@ -699,6 +702,7 @@ namespace Coffee {
             Project::New(path);
             Project::SaveActive();
             Application::Get().GetWindow().SetTitle(Project::GetActive()->GetProjectName() + " - Coffee Engine");
+
         }
         else
         {
