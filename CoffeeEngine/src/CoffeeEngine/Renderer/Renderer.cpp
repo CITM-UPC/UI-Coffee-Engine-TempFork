@@ -15,6 +15,8 @@
 #include "CoffeeEngine/Embedded/FinalPassShader.inl"
 #include "CoffeeEngine/Embedded/MissingShader.inl"
 
+#include "CoffeeEngine/UI/UI Renderer.h"
+
 #include <cstdint>
 #include <glm/fwd.hpp>
 #include <glm/matrix.hpp>
@@ -136,63 +138,54 @@ namespace Coffee {
         s_MainFramebuffer->Bind();
         s_MainFramebuffer->SetDrawBuffers({0, 1});
 
-        RendererAPI::SetClearColor({0.03f,0.03f,0.03f,1.0});
+        RendererAPI::SetClearColor({0.03f, 0.03f, 0.03f, 1.0});
         RendererAPI::Clear();
 
-        // Currently this is done also in the runtime, this should be done only in editor mode
-        s_EntityIDTexture->Clear({-1.0f,0.0f,0.0f,0.0f});
+        s_EntityIDTexture->Clear({-1.0f, 0.0f, 0.0f, 0.0f});
 
         s_RendererData.RenderDataUniformBuffer->SetData(&s_RendererData.renderData, sizeof(RendererData::RenderData));
 
-        // Sort the render queue to minimize state changes
-
-        for(const auto& command : s_RendererData.renderQueue)
+        // Ordenar la cola de renderizado para minimizar cambios de estado
+        for (const auto& command : s_RendererData.renderQueue)
         {
             Material* material = command.material.get();
 
-            if(material == nullptr)
+            if (material == nullptr)
             {
                 material = s_RendererData.DefaultMaterial.get();
             }
-            
-            material->Use();
 
+            material->Use();
             const Ref<Shader>& shader = material->GetShader();
 
             shader->Bind();
             shader->setMat4("model", command.transform);
             shader->setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(command.transform))));
-
-            //REMOVE: This is for the first release of the engine it should be handled differently
             shader->setBool("showNormals", s_RenderSettings.showNormals);
 
-            // Convert entityID to vec3
+            // Convertir entityID a vec3
             uint32_t r = (command.entityID & 0x000000FF) >> 0;
             uint32_t g = (command.entityID & 0x0000FF00) >> 8;
             uint32_t b = (command.entityID & 0x00FF0000) >> 16;
             glm::vec3 entityIDVec3 = glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f);
 
             shader->setVec3("entityID", entityIDVec3);
-
             RendererAPI::DrawIndexed(command.mesh->GetVertexArray());
 
             s_Stats.DrawCalls++;
-
             s_Stats.VertexCount += command.mesh->GetVertices().size();
             s_Stats.IndexCount += command.mesh->GetIndices().size();
         }
 
-        // Test drawing the skybox
+        // Dibujar Skybox
         RendererAPI::SetDepthMask(false);
         s_SkyboxShader->Bind();
         RendererAPI::DrawIndexed(s_SkyboxMesh->GetVertexArray());
         RendererAPI::SetDepthMask(true);
 
-        if(s_RenderSettings.PostProcessing)
+        if (s_RenderSettings.PostProcessing)
         {
-            //Render All the fancy effects :D
-
-            //ToneMapping
+            // Renderizar efectos de postprocesado
             s_PostProcessingFramebuffer->Bind();
 
             s_ToneMappingShader->Bind();
@@ -203,14 +196,11 @@ namespace Coffee {
             RendererAPI::DrawIndexed(s_ScreenQuad->GetVertexArray());
 
             s_ToneMappingShader->Unbind();
-
-            //This has to be set because the s_ScreenQuad overwrites the depth buffer
             RendererAPI::SetDepthMask(false);
 
-            //Final Pass
             s_MainFramebuffer->Bind();
             s_MainFramebuffer->SetDrawBuffers({0});
-            
+
             s_FinalPassShader->Bind();
             s_FinalPassShader->setInt("screenTexture", 0);
             s_PostProcessingTexture->Bind(0);
@@ -218,17 +208,16 @@ namespace Coffee {
             RendererAPI::DrawIndexed(s_ScreenQuad->GetVertexArray());
 
             s_FinalPassShader->Unbind();
-
             RendererAPI::SetDepthMask(true);
         }
 
         DebugRenderer::Flush();
 
-        //Final Pass
+        // Renderizar UI
+        UIRenderer::Render();
+
         s_RendererData.RenderTexture = s_MainRenderTexture;
-
         s_MainFramebuffer->UnBind();
-
         s_RendererData.renderQueue.clear();
     }
 
@@ -284,46 +273,27 @@ namespace Coffee {
 
     void Renderer::SubmitUI(const UIComponent& uiComponent, const glm::mat4& worldTransform)
     {
-        // Validate input components
-        if (!uiComponent.IsVisible)
-            return;
+            if (!uiComponent.IsVisible)
+                return;       
 
-        // Apply world transformation
-        glm::vec2 position = glm::vec2(worldTransform[3]);
-        float scale = glm::length(glm::vec2(worldTransform[0])); // Extract scale from transform
+            if (uiComponent.ComponentType == UIComponent::UIComponentType::Canvas) {
+                UIRenderer::DrawRectangle(uiComponent.Position, uiComponent.Size, uiComponent.Color);
+            } else if (uiComponent.ComponentType == UIComponent::UIComponentType::TextUI) {
+                UIRenderer::DrawText(static_cast<const TextComponent&>(uiComponent));
+            } else if (uiComponent.ComponentType == UIComponent::UIComponentType::Button) {
+                //UIRenderer::DrawButton(uiComponent); // Descomentar para habilitar el dibujo de botones
+            } else if (uiComponent.ComponentType == UIComponent::UIComponentType::Image) { // Nuevo caso para imágenes
+                //UIRenderer::DrawImage(uiComponent.Position, uiComponent.Size, uiComponent.Texture);
+            }
+            // else if (uiComponent.ComponentType == UIComponent::UIComponentType::Slider) { // Nuevo caso para sliders
+            //     //UIRenderer::DrawSlider(uiComponent.Position, uiComponent.Size, uiComponent.Value);
+            // }
 
-        // TODO: Implement specific UI rendering logic
-        // This is a placeholder - you'll need to add actual UI rendering implementation
-        switch (uiComponent.ComponentType)
-        {
-        case UIComponent::UIComponentType::Button:
-            // Render button
-            break;
-        case UIComponent::UIComponentType::TextUI:
-            // Render text
-            if (uiComponent.Text.empty())
-                return;
-            // Assuming a TextRenderer class exists for rendering text
-            
-            // Render text
-            //TextRenderer::RenderText(uiComponent.Text, position, scale);
-            break;
-        case UIComponent::UIComponentType::Canvas:
-            // Render canvas
-            break;
-        default:
-            break;
-        }
-
-        //// Optional: Render child UI elements recursively
-        //if (uiComponent.HasChildren)
-        //{
-        //    for (const auto& childComponent : uiComponent.Children)
-        //    {
-        //        // Recursively submit child UI components with updated world transform
-        //        SubmitUI(childComponent, worldTransform);
-        //    }
-        //}
+            // Recursively render child components
+            for (const auto& child : uiComponent.Children)
+            {
+                SubmitUI(child, worldTransform);
+            } 
     }
 
     void Renderer::OnResize(uint32_t width, uint32_t height)

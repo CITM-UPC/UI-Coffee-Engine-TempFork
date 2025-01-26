@@ -609,11 +609,11 @@ namespace Coffee {
                 // Camera Reference (only relevant for Screen Space - Camera)
                 if (canvas.Mode == CanvasComponent::ScreenSpaceCamera)
                 {
-                    ImGui::Text("Camera: %s", canvas.Camera ? "Assigned" : "None");
-                    if (ImGui::Button("Assign Camera"))
-                    {
-                        // Logic to assign a camera (e.g., open a camera selection dialog)
-                    }
+                    //ImGui::Text("Camera: %s", canvas.HasCamera() ? "Assigned" : "None");
+                    //if (ImGui::Button("Assign Camera"))
+                    //{
+                    //    // Logic to assign a camera (e.g., open a camera selection dialog)
+                    //}
                 }
 
                 // Visibility Toggle

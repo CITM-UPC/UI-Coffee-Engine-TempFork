@@ -2,6 +2,7 @@
 #include "CoffeeEngine/Renderer/RendererAPI.h"
 #include "CoffeeEngine/Renderer/Shader.h"
 #include "CoffeeEngine/Renderer/VertexArray.h"
+#include "CoffeeEngine/Renderer/TextRenderer.h"
 #include "CoffeeEngine/UI/UI Renderer.h"
 
 namespace Coffee
@@ -40,24 +41,21 @@ namespace Coffee
             RendererAPI::DrawQuad(m_UIVertexArray, m_UIVertexCount); // Renderizamos los vértices
             m_UIVertexCount = 0;
         }
-    }
+   }
 
-    void UIRenderer::DrawText(const TextComponent& textComponent)
-    {
-        // Aquí puedes renderizar el texto 2D usando la información del componente.
-        // Esto puede incluir la carga de un bitmap de la fuente, la configuración de color y tamaño, etc.
-        // En este ejemplo, solo se visualiza un texto básico.
+   void UIRenderer::DrawText(const TextComponent& textComponent)
+   {
+       // Load font
 
-        glm::vec2 position = textComponent.Position;
-        glm::vec2 size = glm::vec2(textComponent.Size.x, textComponent.FontSize); // Ajusta el tamaño según el FontSize
-        glm::vec4 color = textComponent.Color;
+       // Render text using the loaded font
+       //TextRenderer* textRenderer; // Create an instance of TextRenderer
+       //textRenderer->RenderText(textComponent.Text, textComponent.Position, textComponent.FontSize, textComponent.Color);
 
-        // Solo un ejemplo simple de un "quad" que representaría el texto
-        DrawRectangle(position, size, color);
-    }
+   }
+
 
    void UIRenderer::DrawRectangle(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
-    {
+   {
         if (m_UIVertexCount + 4 > MaxVertices)
         {
             Render();

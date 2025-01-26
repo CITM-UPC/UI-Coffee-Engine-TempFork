@@ -280,247 +280,160 @@ namespace Coffee
      */
     struct UIComponent
     {
-        glm::vec2 Position = {0.0f, 0.0f};          ///< Position of the UI element.
-        glm::vec2 Size = {100.0f, 50.0f};           ///< Size of the UI element.
-        glm::vec4 Color = {1.0f, 1.0f, 1.0f, 1.0f}; ///< Color of the UI element (RGBA).
-        std::string Text = "UI Element";            ///< Text content of the UI element.
-        std::string TexturePath = "";               ///< Path to the texture (if any).
+        glm::vec2 Position = {0.0f, 0.0f};
+        glm::vec2 Size = {100.0f, 50.0f};
+        glm::vec4 Color = {1.0f, 1.0f, 1.0f, 1.0f};
+        std::string Text = "UI Element";
+        std::string TexturePath = "";
 
-        // New properties
-        bool IsInteractive = false; ///< Whether the UI element can be interacted with.
-        bool IsVisible = true;      ///< Whether the UI element is visible.
-        float Rotation = 0.0f;      ///< Rotation of the UI element in degrees.
-        float Alpha = 1.0f;         ///< Transparency (1.0 = opaque, 0.0 = fully transparent).
+        bool IsInteractive = false;
+        bool IsVisible = true;
+        float Rotation = 0.0f;
+        float Alpha = 1.0f;
 
-        // Nested UI components
-        std::vector<UIComponent> Children; ///< Children UI components (for nesting).
+        std::vector<UIComponent> Children;
 
-        // Type of UI component (e.g., Button, Panel, etc.)
-        enum UIComponentType
+        enum UIComponentType : int
         {
             None = 0,
-            Canvas,
-            Button,
-            Panel,
-            TextUI,
-            Image
+            Canvas = 1,
+            Button = 2,
+            Panel = 3,
+            TextUI = 4,
+            Image = 5
         } ComponentType = None;
 
         UIComponent() = default;
-        UIComponent(const UIComponent&) = default;
+
         UIComponent(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color,
                     const std::string& texturePath = "")
             : Position(position), Size(size), Color(color), TexturePath(texturePath)
         {
         }
 
-        // Adds a child UI component
-        void AddChild(const UIComponent& child) { Children.push_back(child); }
+        virtual ~UIComponent() = default;
 
-        // Removes a child UI component (by index)
-        void RemoveChild(size_t index)
-        {
-            if (index < Children.size())
-                Children.erase(Children.begin() + index);
-        }
+        virtual void AddChild(const UIComponent& child) { Children.push_back(child); }
 
-        // Render the UI element
         virtual void Draw()
         {
             if (!IsVisible)
                 return;
 
-            // Pseudo-code for drawing:
-            // - Apply transformations (position, size, rotation)
-            // - Set the color and alpha
-            // - Draw the texture if available, otherwise draw a rectangle
-            // - Render text if applicable
-
-            // Example:
-            // Renderer::DrawQuad(Position, Size, Color, TexturePath);
-
-            // Draw children recursively
             for (auto& child : Children)
             {
                 child.Draw();
             }
         }
 
-        // Handle interaction (e.g., clicks)
         virtual void HandleInteraction()
         {
             if (!IsInteractive || !IsVisible)
                 return;
 
-            // Pseudo-code for interaction:
-            // - Check if mouse is over the element
-            // - Trigger specific behavior based on `ComponentType`
-            // - Example: if (ComponentType == Button) { OnClick(); }
-        }
-
-        // Serialization
-        template <class Archive> void serialize(Archive& archive)
-        {
-            archive(cereal::make_nvp("Position", Position), cereal::make_nvp("Size", Size),
-                    cereal::make_nvp("Color", Color), cereal::make_nvp("Text", TextUI),
-                    cereal::make_nvp("TexturePath", TexturePath), cereal::make_nvp("ComponentType", ComponentType),
-                    cereal::make_nvp("IsInteractive", IsInteractive), cereal::make_nvp("IsVisible", IsVisible),
-                    cereal::make_nvp("Rotation", Rotation), cereal::make_nvp("Alpha", Alpha),
-                    cereal::make_nvp("Children", Children));
-        }
-    };
-
-    struct CanvasComponent : UIComponent
-    {
-
-        /**
-         * @brief Enum representing the render mode of the canvas.
-         */
-        enum RenderMode
-        {
-            ScreenSpaceOverlay = 0, ///< Rendered in screen space and overlaid on top of everything.
-            ScreenSpaceCamera = 1,  ///< Rendered in screen space but tied to a specific camera.
-            WorldSpace = 2          ///< Rendered in world space as a physical object.
-        };
-
-        RenderMode Mode = ScreenSpaceOverlay;                 ///< The render mode of the canvas.
-        float ReferenceWidth = 1920.0f;                       ///< Reference width for scaling.
-        float ReferenceHeight = 1080.0f;                      ///< Reference height for scaling.
-        glm::vec2 ScaleFactor = {1.0f, 1.0f};                 ///< Scale factor for adapting to different screen sizes.
-        glm::vec4 BackgroundColor = {1.0f, 1.0f, 1.0f, 1.0f}; // Default to white
-
-        bool PixelPerfect = false; ///< Whether the canvas should be rendered pixel-perfect.
-
-        Ref<SceneCamera> Camera; ///< The camera to use if the render mode is ScreenSpaceCamera.
-
-        CanvasComponent() : UIComponent({0.0f, 0.0f}, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f})
-        {
-            ComponentType = Canvas;
-        }
-
-        CanvasComponent(const CanvasComponent&) = default;
-
-        /**
-         * @brief Sets the render mode of the canvas.
-         * @param mode The render mode to set.
-         */
-        void SetRenderMode(RenderMode mode) { Mode = mode; }
-
-        /**
-         * @brief Calculates the scale factor based on the current resolution and reference resolution.
-         * @param currentWidth The current screen width.
-         * @param currentHeight The current screen height.
-         */
-        void UpdateScaleFactor(float currentWidth, float currentHeight)
-        {
-            ScaleFactor.x = currentWidth / ReferenceWidth;
-            ScaleFactor.y = currentHeight / ReferenceHeight;
-        }
-
-        /**
-         * @brief Renders the canvas and its child UI components.
-         */
-        void Draw() override
-        {
-            if (!IsVisible)
-                return;
-
-            // Apply canvas-specific rendering logic.
-            if (Mode == ScreenSpaceOverlay)
-            {
-                // Render as an overlay in screen space.
-                // Example: Renderer::SetScreenSpace();
-            }
-            else if (Mode == ScreenSpaceCamera)
-            {
-                // Render in screen space but using a camera.
-                if (Camera)
-                {
-                    // Example: Renderer::SetCamera(Camera);
-                }
-            }
-            else if (Mode == WorldSpace)
-            {
-                // Render in world space.
-                // Example: Renderer::SetWorldTransform();
-            }
-
-            // Draw children.
-            for (auto& child : Children)
-            {
-                child.Draw();
-            }
-        }
-
-        /**
-         * @brief Handles interaction specific to the canvas.
-         */
-        void HandleInteraction() override
-        {
-            if (!IsInteractive || !IsVisible)
-                return;
-
-            // Pseudo-code for canvas interaction logic (if needed).
-            // Iterate through children and delegate interaction.
             for (auto& child : Children)
             {
                 child.HandleInteraction();
             }
         }
 
-        /**
-         * @brief Serializes the CanvasComponent.
-         * @tparam Archive The type of the archive.
-         * @param archive The archive to serialize to.
-         */
         template <class Archive> void serialize(Archive& archive)
         {
-            archive(cereal::make_nvp("Mode", Mode), cereal::make_nvp("ReferenceWidth", ReferenceWidth),
+            archive(cereal::make_nvp("Position", Position), cereal::make_nvp("Size", Size),
+                    cereal::make_nvp("Color", Color), cereal::make_nvp("Text", Text),
+                    cereal::make_nvp("TexturePath", TexturePath), cereal::make_nvp("IsInteractive", IsInteractive),
+                    cereal::make_nvp("IsVisible", IsVisible), cereal::make_nvp("Rotation", Rotation),
+                    cereal::make_nvp("Alpha", Alpha), cereal::make_nvp("Children", Children),
+                    cereal::make_nvp("ComponentType", ComponentType));
+        }
+    };
+
+    struct CanvasComponent : UIComponent
+    {
+        enum RenderMode
+        {
+            ScreenSpaceOverlay = 0,
+            ScreenSpaceCamera,
+            WorldSpace
+        };
+
+        RenderMode Mode = ScreenSpaceOverlay;
+        float ReferenceWidth = 1920.0f;
+        float ReferenceHeight = 1080.0f;
+        glm::vec2 ScaleFactor = {1.0f, 1.0f};
+        glm::vec4 BackgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
+        bool PixelPerfect = false;
+
+        CanvasComponent() { ComponentType = Canvas; }
+
+        void Draw() override
+        {
+            if (!IsVisible)
+                return;
+
+            for (auto& child : Children)
+            {
+                child.Draw();
+            }
+        }
+
+        void HandleInteraction() override
+        {
+            if (!IsInteractive || !IsVisible)
+                return;
+
+            for (auto& child : Children)
+            {
+                child.HandleInteraction();
+            }
+        }
+
+        template <class Archive> void serialize(Archive& archive)
+        {
+            archive(cereal::base_class<UIComponent>(this), cereal::make_nvp("Mode", Mode),
+                    cereal::make_nvp("ReferenceWidth", ReferenceWidth),
                     cereal::make_nvp("ReferenceHeight", ReferenceHeight), cereal::make_nvp("ScaleFactor", ScaleFactor),
-                    cereal::make_nvp("PixelPerfect", PixelPerfect), cereal::make_nvp("Camera", Camera),
-                    cereal::make_nvp("Children", Children));
+                    cereal::make_nvp("BackgroundColor", BackgroundColor),
+                    cereal::make_nvp("PixelPerfect", PixelPerfect));
         }
     };
 
     struct TextComponent : UIComponent
     {
-        std::string TextUI = "Text";                ///< The text content of the UI element.
-        float FontSize = 16.0f;                     ///< Font size for the text.
-        glm::vec4 Color = {1.0f, 1.0f, 1.0f, 1.0f}; ///< Font color (RGBA).
-        std::string FontPath = "assets/fonts/OpenSans-SemiBold.ttf";       ///< Path to the font file.
+        std::string TextUI = "Text";
+        float FontSize = 16.0f;
+        glm::vec4 FontColor = {1.0f, 1.0f, 1.0f, 1.0f};
+        std::string FontPath = "assets/fonts/OpenSans-SemiBold.ttf";
 
-       enum class Alignment
+        enum class Alignment
         {
-            Left = 0,
+            Left,
             Center,
             Right
-       };
-       Alignment TextAlignment = Alignment::Left; ///< Text alignment
+        };
+        Alignment TextAlignment = Alignment::Left;
 
-        bool WrapText = false;  ///< Enable or disable text wrapping.
-        float WrapWidth = 0.0f; ///< Width for text wrapping (only relevant if WrapText is true).
+        bool WrapText = false;
+        float WrapWidth = 0.0f;
 
-        TextComponent() : UIComponent({0.0f, 0.0f}, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f})
+        TextComponent() { UIComponent::ComponentType = UIComponent::TextUI; }
+
+        void Draw() override
         {
-            ComponentType = UIComponentType::TextUI;
+            if (!IsVisible)
+                return;
+
+            // Render text logic (e.g., use a text rendering engine)
         }
 
-        TextComponent(const TextComponent&) = default;
+        void UpdateText(const std::string& newText) { TextUI = newText; }
 
-        /**
-         * @brief Serializes the TextComponent.
-         * @tparam Archive The type of the archive.
-         * @param archive The archive to serialize to.
-         */
         template <class Archive> void serialize(Archive& archive)
         {
-            archive(cereal::make_nvp("Text", TextUI), cereal::make_nvp("FontSize", FontSize),
-                    cereal::make_nvp("Color", Color), cereal::make_nvp("FontPath", FontPath),
-                    cereal::make_nvp("Alignment", TextAlignment), cereal::make_nvp("WrapText", WrapText),
-                    cereal::make_nvp("WrapWidth", WrapWidth), cereal::make_nvp("Position", Position),
-                    cereal::make_nvp("Size", Size), cereal::make_nvp("Rotation", Rotation),
-                    cereal::make_nvp("Alpha", Alpha), cereal::make_nvp("IsVisible", IsVisible),
-                    cereal::make_nvp("IsInteractive", IsInteractive), cereal::make_nvp("Children", Children));
+            archive(cereal::base_class<UIComponent>(this), cereal::make_nvp("TextUI", TextUI),
+                    cereal::make_nvp("FontSize", FontSize), cereal::make_nvp("FontColor", FontColor),
+                    cereal::make_nvp("FontPath", FontPath), cereal::make_nvp("TextAlignment", TextAlignment),
+                    cereal::make_nvp("WrapText", WrapText), cereal::make_nvp("WrapWidth", WrapWidth));
         }
     };
 

@@ -1,43 +1,38 @@
 #pragma once
-
-#include <string>
-#include <map>
-#include <vector>
-#include <memory>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glad/glad.h>
 #include <ft2build.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include "CoffeeEngine/Scene/Components.h"
+#include <glm/glm.hpp>
+#include <map>
+#include <string>
+#include FT_FREETYPE_H
+#include "CoffeeEngine/Core/Base.h"
+#include "CoffeeEngine/Renderer/Buffer.h"
+#include <Math.h>
 #include "CoffeeEngine/Renderer/Shader.h"
-#include "CoffeeEngine/Renderer/Texture.h"
-#include "CoffeeEngine/Renderer/Renderer.h"
-
+#include "CoffeeEngine/Renderer/VertexArray.h"
+#include "CoffeeEngine/Scene/Components.h"
 
 struct Character
 {
-    unsigned int textureID; // ID de la textura del glifo
-    glm::ivec2 size;        // Tamaño del glifo (ancho, alto)
-    glm::ivec2 bearing;     // Offset desde la línea base al punto superior izquierdo
-    unsigned int advance;   // Desplazamiento horizontal al renderizar el siguiente carácter
+    unsigned int textureID;
+    glm::ivec2 size;
+    glm::ivec2 bearing;
+    unsigned int advance;
 };
 
-class TextRenderer {
-public:
-    TextRenderer();
+class TextRenderer
+{
+  public:
     ~TextRenderer();
+    void Init(const std::string& fontPath = "assets/fonts/OpenSans-Regular.ttf");
+    void RenderText(const std::string& text, const glm::vec2& position, float scale, const glm::vec4& color);
 
-    void init();
-    void RenderText(const std::string& text, const glm::vec2& position, float scale, const glm::vec3& color);
-    //void RenderText(uiComponent.Text, position, scale);
-    void loadFont(const std::string &fontPath);
-    void SetFont(const std::string& fontName, int fontSize);
-    std::string GetFont() const;
+  private:
+    void PreloadCharacters();
 
-    
-private:
-    std::map<char, Character> characters;
-    unsigned int VAO, VBO;
-    //Shader shader; // Cambiado de Shader a std::shared_ptr<Shader>
+    Coffee::Ref<Coffee::Shader> m_Shader;
+    std::map<char, Character> m_Characters;
+    unsigned int m_VAO = 0, m_VBO = 0;
+    FT_Library m_FTLibrary = nullptr;
+    FT_Face m_Face = nullptr;
+    // Añadir método para obtener el shader
 };

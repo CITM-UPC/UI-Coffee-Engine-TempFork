@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 #include "CoffeeEngine/Core/Base.h"
 #include "CoffeeEngine/Renderer/Buffer.h"
 #include <Math.h>
@@ -21,6 +19,8 @@ namespace Coffee
 
         static void DrawText(const TextComponent& textComponent);
         static void DrawRectangle(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
+        
+
 
       private:
         static Ref<Shader> m_UIShader;
