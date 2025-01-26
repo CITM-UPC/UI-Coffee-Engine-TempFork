@@ -66,6 +66,7 @@ namespace Coffee {
         }m_SceneState = SceneState::Edit;
 
         bool m_ViewportFocused = false, m_ViewportHovered = false;
+        //ImVec2 viewportPanelSize = {500.0f, 500.0f};
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
         glm::vec2 m_ViewportBounds[2];
 

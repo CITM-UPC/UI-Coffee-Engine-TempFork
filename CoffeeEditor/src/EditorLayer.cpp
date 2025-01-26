@@ -190,7 +190,7 @@ namespace Coffee {
         ZoneScoped;
 
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
-
+        
         std::string mainMenuAction = "";
         if (ImGui::BeginMainMenuBar()) {
 
@@ -245,6 +245,18 @@ namespace Coffee {
                 }
                 ImGui::EndMenu();
             }
+            /*if (ImGui::BeginMenu("Confi"))
+            {
+                if (ImGui::CollapsingHeader("Configuracion de Modulos"))
+                {
+                    
+                    ImGui::SliderFloat("Ancho de ventana", &viewportPanelSize.x, 200.0f, 2000.0f);
+
+                    ImGui::SliderFloat("Alto de ventana", &viewportPanelSize.y, 200.0f, 1000.0f);
+                    
+                }
+                ImGui::EndMenu();
+            }*/
 
             //Play and Stop buttons
             ImGui::SetCursorPosX(ImGui::GetWindowWidth() * 0.5f - 50);
