@@ -16,6 +16,7 @@
 #include "CoffeeEngine/Embedded/MissingShader.inl"
 
 #include "CoffeeEngine/UI/UI Renderer.h"
+#include "CoffeeEngine/Scene/Entity.h"
 
 #include <cstdint>
 #include <glm/fwd.hpp>
@@ -271,30 +272,46 @@ namespace Coffee {
         s_Stats.DrawCalls++;
     }
 
-    void Renderer::SubmitUI(const UIComponent& uiComponent, const glm::mat4& worldTransform)
+    void Renderer::SubmitUI(const Entity& entity, const glm::mat4& worldTransform)
     {
-            if (!uiComponent.IsVisible)
-                return;       
+        // Verificar si la entidad tiene un componente de UI
+        if (!entity.HasComponent<UIComponent>())
+            return;
 
-            if (uiComponent.ComponentType == UIComponent::UIComponentType::Canvas) {
-                UIRenderer::DrawRectangle(uiComponent.Position, uiComponent.Size, uiComponent.Color);
-            } else if (uiComponent.ComponentType == UIComponent::UIComponentType::TextUI) {
-                UIRenderer::DrawText(static_cast<const TextComponent&>(uiComponent));
-            } else if (uiComponent.ComponentType == UIComponent::UIComponentType::Button) {
-                //UIRenderer::DrawButton(uiComponent); // Descomentar para habilitar el dibujo de botones
-            } else if (uiComponent.ComponentType == UIComponent::UIComponentType::Image) { // Nuevo caso para imágenes
-                //UIRenderer::DrawImage(uiComponent.Position, uiComponent.Size, uiComponent.Texture);
-            }
-            // else if (uiComponent.ComponentType == UIComponent::UIComponentType::Slider) { // Nuevo caso para sliders
-            //     //UIRenderer::DrawSlider(uiComponent.Position, uiComponent.Size, uiComponent.Value);
-            // }
+        // Obtener el componente UI de la entidad
+        UIComponent& uiComponent = entity.GetComponent<UIComponent>();
 
-            // Recursively render child components
-            for (const auto& child : uiComponent.Children)
-            {
-                SubmitUI(child, worldTransform);
-            } 
+        // Verificar si el componente está visible
+        if (!uiComponent.IsVisible)
+            return;
+
+        // Renderizar según el tipo de componente de UI
+        if (uiComponent.ComponentType == UIComponent::UIComponentType::Canvas)
+        {
+            UIRenderer::DrawRectangle(uiComponent.Position, uiComponent.Size, uiComponent.Color);
+        }
+        else if (uiComponent.ComponentType == UIComponent::UIComponentType::TextUI)
+        {
+            UIRenderer::DrawText(static_cast<const TextComponent&>(uiComponent));
+        }
+        else if (uiComponent.ComponentType == UIComponent::UIComponentType::Button)
+        {
+            // UIRenderer::DrawButton(uiComponent); // Descomentar para habilitar el dibujo de botones
+        }
+        else if (uiComponent.ComponentType == UIComponent::UIComponentType::Image)
+        {
+            // UIRenderer::DrawImage(uiComponent.Position, uiComponent.Size, uiComponent.Texture);
+        }
+
+        // Renderizar recursivamente los hijos de la entidad
+        const auto& children = entity.GetComponent<HierarchyComponent>().Children;
+        for (const auto& childHandle : children)
+        {
+            Entity childEntity(childHandle, entity.GetScene());
+            SubmitUI(childEntity, worldTransform);
+        }
     }
+
 
     void Renderer::OnResize(uint32_t width, uint32_t height)
     {

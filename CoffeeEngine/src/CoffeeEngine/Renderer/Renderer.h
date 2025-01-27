@@ -147,7 +147,7 @@ namespace Coffee {
          //Todo change this to a light class and not a component
         static void Submit(const LightComponent& light);
 
-        static void SubmitUI(const UIComponent& uiComponent, const glm::mat4& worldTransform);
+        static void SubmitUI(const Entity& entity, const glm::mat4& worldTransform);
 
         /**
          * @brief Resizes the renderer to the specified width and height.

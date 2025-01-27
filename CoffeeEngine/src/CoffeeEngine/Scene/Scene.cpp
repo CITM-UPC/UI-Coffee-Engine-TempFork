@@ -162,9 +162,9 @@ namespace Coffee {
             auto& transformComponent = uiView.get<TransformComponent>(entity);
 
             // Renderiza el componente UI con su transformación y propiedades.
-            Renderer::SubmitUI(uiComponent, transformComponent.GetWorldTransform());
+            Entity uiEntity = {entity, this}; // Suponiendo que 'entity' es el ID de la entidad correspondiente
+            Renderer::SubmitUI(uiEntity, transformComponent.GetWorldTransform());
         }
-
         Renderer::EndScene();
     }
 

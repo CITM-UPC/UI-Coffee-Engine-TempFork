@@ -4,8 +4,10 @@
 #include "entt/entity/fwd.hpp"
 #include <cereal/cereal.hpp>
 #include <entt/entt.hpp>
+#include <vector> // Necesario para manejar los hijos
 
-namespace Coffee {
+namespace Coffee
+{
 
     class Scene;
 
@@ -24,12 +26,15 @@ namespace Coffee {
          * @brief Constructor with parent entity.
          * @param parent The parent entity.
          */
-        HierarchyComponent(entt::entity parent);
+        HierarchyComponent(entt::entity parent)
+            : m_Parent(parent), m_First(entt::null), m_Next(entt::null), m_Prev(entt::null)
+        {
+        }
 
         /**
          * @brief Default constructor.
          */
-        HierarchyComponent();
+        HierarchyComponent() : m_Parent(entt::null), m_First(entt::null), m_Next(entt::null), m_Prev(entt::null) {}
 
         /**
          * @brief Called when the component is constructed.
@@ -60,30 +65,32 @@ namespace Coffee {
          */
         static void Reparent(entt::registry& registry, entt::entity entity, entt::entity parent);
 
+        // Miembros
         entt::entity m_Parent;
         entt::entity m_First;
         entt::entity m_Next;
         entt::entity m_Prev;
+
+        // Lista de hijos (nuevo)
+        std::vector<entt::entity> Children;
 
         /**
          * @brief Serialize the component.
          * @tparam Archive The archive type.
          * @param archive The archive.
          */
-        template<class Archive>
-/*         void serialize(Archive& archive)
+        template <class Archive> void save(Archive& archive) const
         {
-            archive(cereal::make_nvp("Parent", m_Parent), cereal::make_nvp("First", m_First), cereal::make_nvp("Next", m_Next), cereal::make_nvp("Prev", m_Prev));
-        } */
-        void save(Archive& archive) const
-        {
-            archive(cereal::make_nvp("Parent", m_Parent), cereal::make_nvp("First", m_First), cereal::make_nvp("Next", m_Next), cereal::make_nvp("Prev", m_Prev));
+            archive(cereal::make_nvp("Parent", m_Parent), cereal::make_nvp("First", m_First),
+                    cereal::make_nvp("Next", m_Next), cereal::make_nvp("Prev", m_Prev),
+                    cereal::make_nvp("Children", Children));
         }
 
-        template<class Archive>
-        void load(Archive& archive)
+        template <class Archive> void load(Archive& archive)
         {
-            archive(cereal::make_nvp("Parent", m_Parent), cereal::make_nvp("First", m_First), cereal::make_nvp("Next", m_Next), cereal::make_nvp("Prev", m_Prev));
+            archive(cereal::make_nvp("Parent", m_Parent), cereal::make_nvp("First", m_First),
+                    cereal::make_nvp("Next", m_Next), cereal::make_nvp("Prev", m_Prev),
+                    cereal::make_nvp("Children", Children));
         }
     };
 
@@ -93,7 +100,7 @@ namespace Coffee {
      */
     class SceneTree
     {
-    public:
+      public:
         /**
          * @brief Constructor for SceneTree.
          * @param scene The scene context.
@@ -116,9 +123,9 @@ namespace Coffee {
          */
         void UpdateTransform(entt::entity entity);
 
-    private:
+      private:
         Scene* m_Context;
     };
 
     /** @} */ // end of scene group
-}
+} // namespace Coffee

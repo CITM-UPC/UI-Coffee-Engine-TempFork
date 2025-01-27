@@ -8,21 +8,6 @@
 
 namespace Coffee {
 
-    HierarchyComponent::HierarchyComponent(entt::entity parent)
-    {
-        m_Parent = parent;
-        m_First = entt::null;
-        m_Next = entt::null;
-        m_Prev = entt::null;
-    }
-    HierarchyComponent::HierarchyComponent()
-    {
-        m_Parent = entt::null;
-        m_First = entt::null;
-        m_Next = entt::null;
-        m_Prev = entt::null;
-    }
-
     void HierarchyComponent::OnConstruct(entt::registry& registry, entt::entity entity)
     {
         auto& hierarchy = registry.get<HierarchyComponent>(entity);
