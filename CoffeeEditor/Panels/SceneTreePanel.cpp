@@ -655,8 +655,6 @@ namespace Coffee {
                 {
                     text.Text = std::string(buffer);
                 }
-                UIRenderer::RenderText(text, glm::mat4(1.0f)); // Usar la matriz de transformación adecuada
-
 
                 // Font Size
                 ImGui::DragFloat("Font Size", &text.FontSize, 1.0f, 1.0f, 100.0f);
@@ -687,6 +685,7 @@ namespace Coffee {
                 {
                     ImGui::DragFloat("Wrap Width", &text.WrapWidth, 1.0f, 0.0f, 1000.0f);
                 }
+                UIRenderer::RenderText(text, glm::mat4(1.0f)); // Usar la matriz de transformación adecuada
             }
         }
 
