@@ -37,6 +37,15 @@ TextRenderer::~TextRenderer()
     }
 }
 
+// Definir los miembros estáticos
+Coffee::Ref<Coffee::Shader> TextRenderer::m_Shader;
+std::map<char, Character> TextRenderer::m_Characters;
+unsigned int TextRenderer::m_VAO = 0;
+unsigned int TextRenderer::m_VBO = 0;
+FT_Library TextRenderer::m_FTLibrary = nullptr;
+FT_Face TextRenderer::m_Face = nullptr;
+
+// Definir Init como estático
 void TextRenderer::Init(const std::string& fontPath)
 {
     // Inicializar FreeType

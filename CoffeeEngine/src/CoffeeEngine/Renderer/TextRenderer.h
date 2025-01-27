@@ -23,16 +23,20 @@ class TextRenderer
 {
   public:
     ~TextRenderer();
-    void Init(const std::string& fontPath = "assets/fonts/OpenSans-Regular.ttf");
+
+    // Declarar Init como estático
+    static void Init(const std::string& fontPath = "assets/fonts/OpenSans-Regular.ttf");
+
     void RenderText(const std::string& text, const glm::vec2& position, float scale, const glm::vec4& color);
 
   private:
-    void PreloadCharacters();
+    static void PreloadCharacters();
 
-    Coffee::Ref<Coffee::Shader> m_Shader;
-    std::map<char, Character> m_Characters;
-    unsigned int m_VAO = 0, m_VBO = 0;
-    FT_Library m_FTLibrary = nullptr;
-    FT_Face m_Face = nullptr;
-    // Añadir método para obtener el shader
+    // Convertir miembros no estáticos en estáticos
+    static Coffee::Ref<Coffee::Shader> m_Shader;
+    static std::map<char, Character> m_Characters;
+    static unsigned int m_VAO;
+    static unsigned int m_VBO;
+    static FT_Library m_FTLibrary;
+    static FT_Face m_Face;
 };
