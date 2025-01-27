@@ -27,7 +27,7 @@ namespace Coffee
         m_UIVertexArray->AddVertexBuffer(m_UIVertexBuffer);
 
         // Inicializar el TextRenderer
-        //TextRenderer::Init("assets/fonts/OpenSans-Regular.ttf"); // Asegúrate de que la ruta de la fuente sea correcta
+        TextRenderer::Init("assets/fonts/OpenSans-Regular.ttf"); // Asegúrate de que la ruta de la fuente sea correcta
     }
 
     void UIRenderer::Shutdown()
@@ -92,15 +92,10 @@ namespace Coffee
        }
    }
 
-   void UIRenderer::RenderText(const UIComponent& textComponent, const glm::mat4& worldTransform)
-   {
+  void UIRenderer::RenderText(const UIComponent& textComponent, const glm::mat4& worldTransform)
+  {
        const TextComponent& textComp = static_cast<const TextComponent&>(textComponent);
-
-       // Crear una instancia de TextRenderer
-       /*  TextRenderer* textRenderer;
-
-       textRenderer->Init();
-       textRenderer->RenderText(textComp.Text, textComp.Position, textComp.FontSize, textComp.Color);*/
-
+       // Usar :: para llamar al método estático
+       TextRenderer::RenderText(textComp.Text, textComp.Position, textComp.FontSize, textComp.Color);
    }
 } 

@@ -27,7 +27,7 @@ class TextRenderer
     // Declarar Init como estático
     static void Init(const std::string& fontPath = "assets/fonts/OpenSans-Regular.ttf");
 
-    void RenderText(const std::string& text, const glm::vec2& position, float scale, const glm::vec4& color);
+    static void RenderText(const std::string& text, const glm::vec2& position, float scale, const glm::vec4& color);
 
   private:
     static void PreloadCharacters();

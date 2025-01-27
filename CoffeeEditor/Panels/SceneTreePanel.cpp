@@ -18,6 +18,7 @@
 #include "entt/entity/fwd.hpp"
 #include "imgui_internal.h"
 #include <IconsLucide.h>
+#include "CoffeeEngine/UI/UI Renderer.h"
 
 #include <CoffeeEngine/Scripting/Script.h>
 #include <array>
@@ -654,6 +655,8 @@ namespace Coffee {
                 {
                     text.Text = std::string(buffer);
                 }
+                UIRenderer::RenderText(text, glm::mat4(1.0f)); // Usar la matriz de transformación adecuada
+
 
                 // Font Size
                 ImGui::DragFloat("Font Size", &text.FontSize, 1.0f, 1.0f, 100.0f);

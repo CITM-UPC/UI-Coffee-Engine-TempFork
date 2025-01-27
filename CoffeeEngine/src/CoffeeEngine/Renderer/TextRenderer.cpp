@@ -1,41 +1,9 @@
 #include "CoffeeEngine/Renderer/TextRenderer.h"
 #include <glad/glad.h>
 #include <iostream>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
-TextRenderer::~TextRenderer()
-{
-    // Liberar recursos de FreeType
-    if (m_Face)
-    {
-        FT_Done_Face(m_Face);
-        m_Face = nullptr;
-    }
-
-    if (m_FTLibrary)
-    {
-        FT_Done_FreeType(m_FTLibrary);
-        m_FTLibrary = nullptr;
-    }
-
-    // Liberar recursos de OpenGL
-    if (m_VBO)
-    {
-        glDeleteBuffers(1, &m_VBO);
-        m_VBO = 0;
-    }
-
-    if (m_VAO)
-    {
-        glDeleteVertexArrays(1, &m_VAO);
-        m_VAO = 0;
-    }
-
-    // Liberar texturas de caracteres
-    for (auto& pair : m_Characters)
-    {
-        glDeleteTextures(1, &pair.second.textureID);
-    }
-}
 
 // Definir los miembros estáticos
 Coffee::Ref<Coffee::Shader> TextRenderer::m_Shader;
@@ -93,6 +61,41 @@ void TextRenderer::Init(const std::string& fontPath)
     PreloadCharacters();
 }
 
+void TextRenderer::PreloadCharacters()
+{
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Asegurar alineación de 1 byte
+
+    for (unsigned char c = 0; c < 128; c++)
+    {
+        // Cargar el carácter usando FreeType
+        if (FT_Load_Char(m_Face, c, FT_LOAD_RENDER))
+        {
+            std::cerr << "ERROR: Failed to load Glyph " << c << std::endl;
+            continue;
+        }
+
+        unsigned int texture;
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_Face->glyph->bitmap.width, m_Face->glyph->bitmap.rows, 0, GL_RED,
+                     GL_UNSIGNED_BYTE, m_Face->glyph->bitmap.buffer);
+
+        // Configurar parámetros de la textura
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // Almacenar los datos del carácter
+        Character character = {texture, glm::ivec2(m_Face->glyph->bitmap.width, m_Face->glyph->bitmap.rows),
+                               glm::ivec2(m_Face->glyph->bitmap_left, m_Face->glyph->bitmap_top),
+                               static_cast<unsigned int>(m_Face->glyph->advance.x)};
+        m_Characters[c] = character;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void TextRenderer::RenderText(const std::string& text, const glm::vec2& position, float scale, const glm::vec4& color)
 {
     if (!m_Shader)
@@ -137,37 +140,38 @@ void TextRenderer::RenderText(const std::string& text, const glm::vec2& position
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void TextRenderer::PreloadCharacters()
+
+TextRenderer::~TextRenderer()
 {
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Asegurar alineación de 1 byte
-
-    for (unsigned char c = 0; c < 128; c++)
+    // Liberar recursos de FreeType
+    if (m_Face)
     {
-        // Cargar el carácter usando FreeType
-        if (FT_Load_Char(m_Face, c, FT_LOAD_RENDER))
-        {
-            std::cerr << "ERROR: Failed to load Glyph " << c << std::endl;
-            continue;
-        }
-
-        unsigned int texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_Face->glyph->bitmap.width, m_Face->glyph->bitmap.rows, 0, GL_RED,
-                     GL_UNSIGNED_BYTE, m_Face->glyph->bitmap.buffer);
-
-        // Configurar parámetros de la textura
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        // Almacenar los datos del carácter
-        Character character = {texture, glm::ivec2(m_Face->glyph->bitmap.width, m_Face->glyph->bitmap.rows),
-                               glm::ivec2(m_Face->glyph->bitmap_left, m_Face->glyph->bitmap_top),
-                               static_cast<unsigned int>(m_Face->glyph->advance.x)};
-        m_Characters[c] = character;
+        FT_Done_Face(m_Face);
+        m_Face = nullptr;
     }
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+    if (m_FTLibrary)
+    {
+        FT_Done_FreeType(m_FTLibrary);
+        m_FTLibrary = nullptr;
+    }
+
+    // Liberar recursos de OpenGL
+    if (m_VBO)
+    {
+        glDeleteBuffers(1, &m_VBO);
+        m_VBO = 0;
+    }
+
+    if (m_VAO)
+    {
+        glDeleteVertexArrays(1, &m_VAO);
+        m_VAO = 0;
+    }
+
+    // Liberar texturas de caracteres
+    for (auto& pair : m_Characters)
+    {
+        glDeleteTextures(1, &pair.second.textureID);
+    }
 }
