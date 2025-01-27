@@ -70,5 +70,34 @@ namespace Coffee
         m_UIVertices[m_UIVertexCount++] = {topRight, color};
         m_UIVertices[m_UIVertexCount++] = {bottomLeft, color};
         m_UIVertices[m_UIVertexCount++] = {bottomRight, color};
-    }
+   }
+
+   void UIRenderer::RenderCanvas(const Entity& entity, UIComponent& uiComponent, const glm::mat4& worldTransform)
+   {
+       // Renderizar el canvas y sus hijos
+       for (auto& child : uiComponent.Children)
+       {
+           if (child.ComponentType == UIComponent::UIComponentType::TextUI)
+           {
+               TextComponent& textComponent = static_cast<TextComponent&>(child);
+               RenderText(textComponent, worldTransform);
+           }
+           else if (child.ComponentType == UIComponent::UIComponentType::Canvas)
+           {
+               RenderCanvas(entity, child, worldTransform);
+           }
+       }
+   }
+
+   void UIRenderer::RenderText(const UIComponent& textComponent, const glm::mat4& worldTransform)
+   {
+       const TextComponent& textComp = static_cast<const TextComponent&>(textComponent);
+
+       // Crear una instancia de TextRenderer
+       /*  TextRenderer* textRenderer;
+
+       textRenderer->Init();
+       textRenderer->RenderText(textComp.Text, textComp.Position, textComp.FontSize, textComp.Color);*/
+
+   }
 } 

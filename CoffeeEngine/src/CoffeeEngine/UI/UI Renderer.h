@@ -19,6 +19,10 @@ namespace Coffee
 
         static void DrawText(const TextComponent& textComponent);
         static void DrawRectangle(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
+
+        static void RenderCanvas(const Entity& entity, UIComponent& uiComponent, const glm::mat4& worldTransform);
+        static void RenderText(const UIComponent& textComponent, const glm::mat4& worldTransform);
+
         
 
 

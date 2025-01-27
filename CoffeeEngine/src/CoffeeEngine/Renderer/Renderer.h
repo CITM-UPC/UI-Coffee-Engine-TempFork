@@ -10,6 +10,7 @@
 #include "CoffeeEngine/Renderer/UniformBuffer.h"
 #include "CoffeeEngine/Renderer/VertexArray.h"
 #include "CoffeeEngine/Scene/Components.h"
+#include "CoffeeEngine/Scene/Entity.h"
 #include <glm/fwd.hpp>
 
 namespace Coffee {
@@ -26,6 +27,7 @@ namespace Coffee {
         Ref<Mesh> mesh;
         Ref<Material> material;
         uint32_t entityID;
+        Entity entity;
     };
 
     /**

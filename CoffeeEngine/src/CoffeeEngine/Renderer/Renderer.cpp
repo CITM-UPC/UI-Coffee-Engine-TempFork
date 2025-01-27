@@ -136,6 +136,13 @@ namespace Coffee {
 
     void Renderer::EndScene()
     {
+        for (const auto& command : s_RendererData.renderQueue)
+        {
+            if (command.entity.HasComponent<UIComponent>())
+            {
+                SubmitUI(command.entity, command.entity.GetComponent<TransformComponent>().GetWorldTransform());
+            }
+        }
         s_MainFramebuffer->Bind();
         s_MainFramebuffer->SetDrawBuffers({0, 1});
 
@@ -274,45 +281,27 @@ namespace Coffee {
 
     void Renderer::SubmitUI(const Entity& entity, const glm::mat4& worldTransform)
     {
-        // Verificar si la entidad tiene un componente de UI
         if (!entity.HasComponent<UIComponent>())
             return;
 
-        // Obtener el componente UI de la entidad
         UIComponent& uiComponent = entity.GetComponent<UIComponent>();
 
-        // Verificar si el componente está visible
         if (!uiComponent.IsVisible)
             return;
 
-        // Renderizar según el tipo de componente de UI
         if (uiComponent.ComponentType == UIComponent::UIComponentType::Canvas)
         {
-            UIRenderer::DrawRectangle(uiComponent.Position, uiComponent.Size, uiComponent.Color);
+            // Renderizar el canvas y sus hijos
+            UIRenderer::RenderCanvas(entity, uiComponent, worldTransform);
         }
         else if (uiComponent.ComponentType == UIComponent::UIComponentType::TextUI)
         {
-            UIRenderer::DrawText(static_cast<const TextComponent&>(uiComponent));
-        }
-        else if (uiComponent.ComponentType == UIComponent::UIComponentType::Button)
-        {
-            // UIRenderer::DrawButton(uiComponent); // Descomentar para habilitar el dibujo de botones
-        }
-        else if (uiComponent.ComponentType == UIComponent::UIComponentType::Image)
-        {
-            // UIRenderer::DrawImage(uiComponent.Position, uiComponent.Size, uiComponent.Texture);
-        }
-
-        // Renderizar recursivamente los hijos de la entidad
-        const auto& children = entity.GetComponent<HierarchyComponent>().Children;
-        for (const auto& childHandle : children)
-        {
-            Entity childEntity(childHandle, entity.GetScene());
-            SubmitUI(childEntity, worldTransform);
+            // Renderizar el texto
+            TextComponent& textComponent = static_cast<TextComponent&>(uiComponent);
+            UIRenderer::RenderText(textComponent, worldTransform);
         }
     }
-
-
+    
     void Renderer::OnResize(uint32_t width, uint32_t height)
     {
         s_viewportWidth = width;
