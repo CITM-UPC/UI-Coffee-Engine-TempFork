@@ -158,7 +158,6 @@ namespace Coffee {
             if (!success)
             {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                //std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
                 COFFEE_CORE_ERROR("ERROR::SHADER_COMPILATION_ERROR of type: {0}\n{1}\n", type, infoLog);
             }
         }
@@ -168,11 +167,11 @@ namespace Coffee {
             if (!success)
             {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                //std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
                 COFFEE_CORE_ERROR("ERROR::PROGRAM_LINKING_ERROR of type: {0}\n{1}\n", type, infoLog);
             }
         }
     }
+
 
     void Shader::CompileShader(const std::string& shaderSource)
     {

@@ -57,6 +57,10 @@ void TextRenderer::Init(const std::string& fontPath)
     // Crear el shader para texto
     m_Shader = Coffee::CreateRef<Coffee::Shader>("TextShader", "assets/shaders/text.glsl");
 
+    m_Shader->Bind();
+    m_Shader->setInt("text", 0);
+
+
     // Pre-cargar los caracteres
     PreloadCharacters();
 }

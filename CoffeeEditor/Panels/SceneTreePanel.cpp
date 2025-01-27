@@ -643,6 +643,7 @@ namespace Coffee {
         }
         if (entity.HasComponent<TextComponent>())
         {
+            UIRenderer::Init();
             auto& text = entity.GetComponent<TextComponent>();
 
             if (ImGui::CollapsingHeader("Text Properties", ImGuiTreeNodeFlags_DefaultOpen))
