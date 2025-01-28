@@ -1,5 +1,6 @@
-#type vertex
-#version 330 core
+#[vertex]
+
+#version 450 core
 
 layout (location = 0) in vec4 vertex; // <vec2 position, vec2 texCoords>
 out vec2 TexCoords;
@@ -11,8 +12,9 @@ void main() {
     TexCoords = vertex.zw;
 }
 
-#type fragment
-#version 330 core
+#[fragment]
+
+#version 450 core
 
 in vec2 TexCoords;
 out vec4 FragColor;

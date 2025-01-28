@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <ft2build.h>
+#include "tracy/Tracy.hpp"
 #include FT_FREETYPE_H
 
 
@@ -56,10 +57,11 @@ void TextRenderer::Init(const std::string& fontPath)
 
     // Crear el shader para texto
     m_Shader = Coffee::CreateRef<Coffee::Shader>("TextShader", "assets/shaders/text.glsl");
+    //m_Shader = Coffee::Shader::Create("CoffeeEditor/assets/shaders/text.glsl");
+
+    ZoneScoped;
 
     m_Shader->Bind();
-    m_Shader->setInt("text", 0);
-
 
     // Pre-cargar los caracteres
     PreloadCharacters();
