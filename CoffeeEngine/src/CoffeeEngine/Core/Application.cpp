@@ -23,6 +23,7 @@ namespace Coffee
         SetEventCallback(COFFEE_BIND_EVENT_FN(OnEvent));
 
         Renderer::Init();
+        //TextRenderer::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);

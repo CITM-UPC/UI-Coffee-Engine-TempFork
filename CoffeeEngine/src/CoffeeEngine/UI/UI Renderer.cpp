@@ -17,7 +17,7 @@ namespace Coffee
 
     void UIRenderer::Init()
     {
-        m_UIShader = CreateRef<Shader>("UIShader", "assets/shaders/text.glsl");
+        //m_UIShader = CreateRef<Shader>("UIShader", "assets/shaders/text.glsl");
 
         BufferLayout vertexLayout = {{ShaderDataType::Vec2, "a_Position"}, {ShaderDataType::Vec4, "a_Color"}};
 
@@ -48,6 +48,9 @@ namespace Coffee
 
    void UIRenderer::DrawText(const TextComponent& textComponent)
    {
+       TextRenderer::RenderText(textComponent.Text, textComponent.Position, textComponent.FontSize,
+                                textComponent.Color);
+
        // Load font
 
        // Render text using the loaded font
@@ -92,10 +95,12 @@ namespace Coffee
        }
    }
 
-  void UIRenderer::RenderText(const UIComponent& textComponent, const glm::mat4& worldTransform)
+  void UIRenderer::RenderText(const TextComponent& textComponent, const glm::mat4& worldTransform)
   {
-       const TextComponent& textComp = static_cast<const TextComponent&>(textComponent);
-       // Usar :: para llamar al método estático
-       TextRenderer::RenderText(textComp.Text, textComp.Position, textComp.FontSize, textComp.Color);
+      TextRenderer::RenderText(textComponent.Text, textComponent.Position, textComponent.FontSize, textComponent.Color);
+
+       //const TextComponent& textComp = static_cast<const TextComponent&>(textComponent);
+       //// Usar :: para llamar al método estático
+       //TextRenderer::RenderText(textComp.Text, textComp.Position, textComp.FontSize, textComp.Color);
    }
 } 

@@ -70,6 +70,8 @@ namespace Coffee {
 
         RendererAPI::Init();
         DebugRenderer::Init();
+        UIRenderer::Init();
+        TextRenderer::Init();
 
         s_RendererData.CameraUniformBuffer = UniformBuffer::Create(sizeof(RendererData::CameraData), 0);
         s_RendererData.RenderDataUniformBuffer = UniformBuffer::Create(sizeof(RendererData::RenderData), 1);

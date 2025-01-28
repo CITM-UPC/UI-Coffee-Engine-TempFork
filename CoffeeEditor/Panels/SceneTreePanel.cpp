@@ -575,10 +575,10 @@ namespace Coffee {
                 char buffer[256];
                 memset(buffer, 0, sizeof(buffer));
                 strcpy(buffer, ui.Text.c_str()); // Cambiar a 'Text'
-               /* if (ImGui::InputText("Text", buffer, sizeof(buffer)))
+                if (ImGui::InputText("Text", buffer, sizeof(buffer)))
                 {
                     ui.Text = std::string(buffer);
-                }*/
+                }
             }
         }
         if (entity.HasComponent<CanvasComponent>())
